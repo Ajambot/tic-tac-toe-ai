@@ -9,14 +9,22 @@ def printGrid(grid):
     print(grid[2][0], '|', grid[2][1], '|', grid[2][2])
     print()
 
+def turnCount(grid):
+    count = 0
+    for row in grid:
+        for box in row:
+            if box != ' ':
+                count+=1
+    return count
 
 def checkWin(grid):
+    turns = turnCount(grid)
     for i in range(3):
-        if(grid[i][0] == grid[i][1] == grid[i][2] != ' '): return 1 if grid[i][0]=='X' else -1
-        if(grid[0][i] == grid[1][i] == grid[2][i] != ' '): return 1 if grid[0][i]=='X' else -1
+        if(grid[i][0] == grid[i][1] == grid[i][2] != ' '): return 10-turns if grid[i][0]=='X' else -10+turns
+        if(grid[0][i] == grid[1][i] == grid[2][i] != ' '): return 10-turns if grid[0][i]=='X' else -10+turns
     if((grid[0][0] == grid[1][1] == grid[2][2] != ' ')
        or (grid[2][0] == grid[1][1] == grid[0][2] != ' ')):
-        return 1 if grid[1][1]=='X' else -1
+        return 10-turns if grid[1][1]=='X' else -10+turns
     for row in grid:
         for box in row:
             if(box == ' '):
@@ -146,10 +154,10 @@ while(checkWin(grid)==None):
     printGrid(grid)
     move=None
     if turn==0:
-        move = input("Enter your move (x,y): ")
+        move = input("Enter your move (row,column): ")
         move = move.split(',')
         while len(move)!=2 or move[0] not in ["0","1","2"] or move[1] not in ["0","1", "2"] or grid[int(move[0])][int(move[1])]!=' ':
-            move = input("Enter your move (x,y): ")
+            move = input("Enter your move (row,column): ")
             move = move.split(',')
         move[0] = int(move[0])
         move[1] = int(move[1])
@@ -158,22 +166,12 @@ while(checkWin(grid)==None):
         bestMove = None
         bestOutcome = 2
         for move in getPossibleMoves(grid):
-            if start == 1 and sel<2:
+            if sel<2:
                 outcome = model(playTurn(grid, move, symbol[turn]), 1-turn)
                 if outcome<bestOutcome:
                     bestOutcome = outcome
                     bestMove = move
-            elif start==0 and sel<2:
-                outcome = model(playTurn(grid, move, symbol[turn]), 1-turn)
-                if outcome<bestOutcome:
-                    bestOutcome = outcome
-                    bestMove = move
-            elif start==1 and sel>=2:
-                outcome = model(playTurn(grid, move, symbol[turn]), 1-turn, -2, 2)
-                if outcome<bestOutcome:
-                    bestOutcome = outcome
-                    bestMove = move
-            elif start==0 and sel>=2:
+            else:
                 outcome = model(playTurn(grid, move, symbol[turn]), 1-turn, -2, 2)
                 if outcome<bestOutcome:
                     bestOutcome = outcome
